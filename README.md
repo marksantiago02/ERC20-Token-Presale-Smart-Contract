@@ -1,55 +1,74 @@
-# ERC20 Token Presale Smart Contract
+# ERC20 Token Presale & ICO Smart Contract | Ethereum Crowdsale Platform
 
-Build ERC20 Token and Launch a Token Presale
+## 📈 Ethereum Token Sale Overview
+A complete solution for launching your ERC20 token and running a successful token presale (ICO) on Ethereum. This smart contract is built with Solidity and supports multiple payment methods including ETH, USDT, USDC, and DAI.
 
-The goal of this exercise is to build Ethereum-based ERC20 token and start a token pre-sale campaign (ICO).
-The code of token will be written in Solidity. Before we get started, MetaMask must be installed. Throughout this project, we will use Sepolia Testnet.
+## 🚀 Key ICO & Presale Features
 
-## Requirements
-MetaMask, Phantom, Coinbase, WalletConnect, Rainbow wallet.
+### ERC20 Token Specifications
+- **Standard**: ERC20 Compliant
+- **Name**: ERC20 Token
+- **Symbol**: ECT
+- **Decimals**: 18
+- **Total Supply**: 100,000,000,000 (100 billion) tokens
 
-## Network
-Sepolia Testnet for testing
-Ethereum Mainnet for deployment
+### Ethereum Presale Structure & Tokenomics
+- **Allocation**: 10,000,000,000 (10 billion) tokens - 10% of total supply
+- **Duration**: 30 days
+- **Funding Goals**:
+  - Softcap: 500,000 USDT
+  - Hardcap: 1,020,000 USDT
+- **Minimum Investment**: 100 USDT equivalent
 
-## Token features
-- Type: ERC20
-- Name: ERC20 Token
-- Symbol: ECT
-- Decimal: 18
-- Total Supply: 100 billion
+### Multi-Stage ICO Pricing Model
+| Stage | Token Price (USDT) | Allocation (tokens) |
+|-------|-------------------|---------------------|
+| 1     | 0.00008           | 3 billion           |
+| 2     | 0.00010           | 4 billion           |
+| 3     | 0.00012           | 2 billion           |
+| 4     | 0.00014           | 1 billion           |
 
-##	Presale features
-- Presale Supply: 10 billion (10%)
-- Presale Period: 30 days
-- Presale Stage: 4
-- Softcap: 500000 USDT
-- Hardcap: 1020000 USDT    
-- Price and token amounts for each stage:
-  
-   | Stage | Price | Token Amount |
-   | ----- | ----- | ----- |
-   | 1 | 0.00008 USDT | 3 billion |
-   | 2 | 0.00010 USDT | 4 billion |
-   | 3 | 0.00012 USDT | 2 billion |
-   | 4 | 0.00014 USDT | 1 billion |
+### Cryptocurrency Payment Options
+- Ethereum (ETH)
+- Tether (USDT)
+- USD Coin (USDC)
+- Dai (DAI)
 
-- Options for buying tokens: ETH, USDT, USDC, DAI
-- Claim time: After second public sale ends
-- Minimum amount for buying tokens: 100 USDT
+### Token Investor Benefits & Rewards
+- Early investors (pre-softcap) qualify for bonus tokens from any unsold allocation
+- Token claiming available after presale completion
 
-Investors who bought tokens before sofcap reached are listed on early investors and can get bonus tokens after presale ends if unsold tokens exist.
+## 💻 Web3 Wallet Compatibility
+- Compatible with major Web3 wallets:
+  - MetaMask
+  - Phantom
+  - Coinbase Wallet
+  - WalletConnect
+  - Rainbow
 
-## Funtion lists and descriptions
-If you want to know more about the functions, please refer to the [function](https://github.com/BTC415/ERC20-Token-Presale-smart-contract/blob/master/function_description.md) description.
+## 🌐 Blockchain Network Support
+- **Testing**: Sepolia Testnet
+- **Production**: Ethereum Mainnet
 
-## License
-[MIT](./LICENSE)
+## 📋 Smart Contract Functions & Documentation
+For a detailed breakdown of all available functions for owners and investors, please refer to our [Function Documentation](https://github.com/BTC415/ERC20-Token-Presale-smart-contract/blob/master/function_description.md).
 
-## Contact
-- Email: marksantiago0929@gmail.com
-- Telegram: @marksantiago02
-- Discord: @marksantiago02
-- Twitter: @MarkSantiago02
-- Instagram: @marksantiago_0929
-- Linkedin: https://www.linkedin.com/in/mark-santiago-373172339/ 
+## ⚙️ Token Presale Implementation Guide
+1. Deploy the token contract to Sepolia Testnet for testing
+2. Configure presale parameters
+3. Test all investor and owner functions
+4. Deploy to Ethereum Mainnet when ready for production
+
+## 📜 License
+This project is licensed under the [MIT License](./LICENSE).
+
+## 📞 Contact Information
+- **Email**: marksantiago0929@gmail.com
+- **Telegram**: @marksantiago02
+- **Discord**: @marksantiago02
+- **Twitter**: @MarkSantiago02
+- **Instagram**: @marksantiago_0929
+- **LinkedIn**: [Mark Santiago](https://www.linkedin.com/in/mark-santiago-373172339/)
+
+## 🔗 Related Keywords
+<i>Ethereum ICO, Token Presale, ERC20 Token Launch, Cryptocurrency Crowdsale, Ethereum Smart Contract, Token Sale Platform, ICO Smart Contract, Ethereum Fundraising</i>
