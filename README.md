@@ -59,6 +59,12 @@ For a detailed breakdown of all available functions for owners and investors, pl
 3. Test all investor and owner functions
 4. Deploy to Ethereum Mainnet when ready for production
 
+## Advanced features that is needed to implemented
+
+- Consider `createRound`, `endRound`, `extendRound` function for controlling the presale contract by owner.
+- Consider investor promotion mechanism like revenue sharing model, or early investor model.
+- Consider bonding curve models 
+
 ## 📜 License
 This project is licensed under the [MIT License](./LICENSE).
 
