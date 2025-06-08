@@ -39,7 +39,8 @@ contract Presale is Pausable, ReentrancyGuard {
             : 0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008; // Sepolia Uniswap V2
 
     ///@dev MULTISIGWALLET address
-    address private immutable MULTISIG_WALLET_ADDRESS = 0x0000000000000000000000000000000000000000;  //Pre-defined multisig wallet address
+    address private immutable MULTISIG_WALLET_ADDRESS =
+        0x0000000000000000000000000000000000000000; //Pre-defined multisig wallet address
 
     /// @dev owner address
     address private _owner;
@@ -77,6 +78,10 @@ contract Presale is Pausable, ReentrancyGuard {
     /// @dev Define thresholds of token amount and prices
     uint256[] public thresholds;
     uint256[] public prices;
+
+    /// @dev Pause mechanism variables
+    uint256 public pausedAt;
+    uint256 public constant MAX_PAUSE_DURATION = 7 days;
 
     /// @dev Tracks contributions of investors, how the investors invest with which coin
     mapping(address => mapping(address => uint256)) public investments;
@@ -125,6 +130,13 @@ contract Presale is Pausable, ReentrancyGuard {
         address indexed previousOwner,
         address indexed newOwner
     );
+
+    /// @dev Pause-related events
+    event PauseInitiated(
+        uint256 indexed pausedAt,
+        uint256 indexed maxUnpauseTime
+    );
+    event EmergencyUnpaused(address indexed caller, uint256 indexed timestamp);
 
     /// @dev validate if address is non-zero
     modifier notZeroAddress(address address_) {
@@ -405,7 +417,7 @@ contract Presale is Pausable, ReentrancyGuard {
         );
         require(fundsRaised < softcap, "Softcap reached, refund not available");
 
-       // Private Code for Refund the funds to the investors
+        // Private Code for Refund the funds to the investors
 
         fundsRaised = 0;
         delete investors;
@@ -644,6 +656,77 @@ contract Presale is Pausable, ReentrancyGuard {
      */
     function getOwner() public view returns (address) {
         return _owner;
+    }
+
+    /**
+     * @dev Override paused function to implement automatic unpause after MAX_PAUSE_DURATION
+     * @return bool indicating if contract is currently paused
+     */
+    function paused() public view override returns (bool) {
+        bool isPaused = super.paused();
+        if (
+            isPaused &&
+            pausedAt > 0 &&
+            block.timestamp > pausedAt + MAX_PAUSE_DURATION
+        ) {
+            return false; // Auto-unpause after max duration
+        }
+        return isPaused;
+    }
+
+    /**
+     * @dev Pause the contract (only owner)
+     * Records the pause timestamp for emergency unpause mechanism
+     */
+    function pause() external onlyOwner {
+        require(!paused(), "Contract is already paused");
+        pausedAt = block.timestamp;
+        _pause();
+        emit PauseInitiated(pausedAt, pausedAt + MAX_PAUSE_DURATION);
+    }
+
+    /**
+     * @dev Unpause the contract (only owner)
+     * Resets the pause timestamp
+     */
+    function unpause() external onlyOwner {
+        require(paused(), "Contract is not paused");
+        pausedAt = 0;
+        _unpause();
+    }
+
+    /**
+     * @dev Emergency unpause function that can be called by anyone after MAX_PAUSE_DURATION
+     * Prevents permanent pause scenarios
+     */
+    function emergencyUnpause() external {
+        require(super.paused(), "Contract is not paused");
+        require(pausedAt > 0, "Invalid pause state");
+        require(
+            block.timestamp > pausedAt + MAX_PAUSE_DURATION,
+            "Emergency unpause not yet available"
+        );
+
+        pausedAt = 0;
+        _unpause();
+        emit EmergencyUnpaused(msg.sender, block.timestamp);
+    }
+
+    /**
+     * @dev Get remaining time until emergency unpause becomes available
+     * @return uint256 seconds remaining, or 0 if emergency unpause is available
+     */
+    function getEmergencyUnpauseTime() external view returns (uint256) {
+        if (!super.paused() || pausedAt == 0) {
+            return 0;
+        }
+
+        uint256 emergencyTime = pausedAt + MAX_PAUSE_DURATION;
+        if (block.timestamp >= emergencyTime) {
+            return 0;
+        }
+
+        return emergencyTime - block.timestamp;
     }
 
     receive() external payable {}
