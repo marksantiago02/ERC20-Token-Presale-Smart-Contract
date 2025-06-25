@@ -460,7 +460,10 @@ contract Presale is Pausable, ReentrancyGuard {
             "Invalid time for buying the token"
         );
 
-        //Private code to calculate estimated token amount and available coin amount
+        uint256 _estimatedTokenAmount = estimatedTokenAmountAvailableWithETH(
+            msg.value
+        );
+        uint256 _tokensAvailable = getTokensAvailable();
 
         require(
             _estimatedTokenAmount <= _tokensAvailable &&
@@ -468,7 +471,39 @@ contract Presale is Pausable, ReentrancyGuard {
             "Invalid token amount to buy"
         );
 
-        //Private function to buy token with ETH
+        uint256 minUSDTOutput = (estimatedCoinAmountForTokenAmount(
+            _estimatedTokenAmount,
+            USDTInterface
+        ) * 90) / 100;
+        // Swap ETH for USDT
+        address[] memory path = new address[](2);
+        path[0] = router.WETH();
+        path[1] = USDT;
+
+        uint256[] memory amounts = router.swapExactETHForTokens{
+            value: msg.value
+        }(minUSDTOutput, path, address(this), block.timestamp + 15 minutes);
+
+        // Ensure the swap was successful
+        require(amounts.length > 1, "Swap failed, no USDT received");
+        uint256 _usdtAmount = amounts[1];
+
+        // Calculate final token amount
+        uint256 _tokenAmount = estimatedTokenAmountAvailableWithCoin(
+            _usdtAmount,
+            USDTInterface
+        );
+
+        //Update investor records
+        _updateInvestorRecords(
+            msg.sender,
+            _tokenAmount,
+            USDTInterface,
+            _usdtAmount
+        );
+
+        //Update presale stats
+        _updatePresaleStats(_tokenAmount, _usdtAmount, 6);
 
         emit TokensBought(
             msg.sender,
