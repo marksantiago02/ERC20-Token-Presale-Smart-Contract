@@ -273,8 +273,20 @@ contract Presale is Pausable, ReentrancyGuard {
             _coinAmount <= coin_.balanceOf(msg.sender),
             "Insufficient balance."
         );
+        
+        //Send the coin to the contract
+        SafeERC20.safeTransferFrom(
+            coin_,
+            msg.sender,
+            address(this),
+            _coinAmount
+        );
 
-        // Private code for buying tokens
+        //Update the investor status
+        _updateInvestorRecords(msg.sender, tokenAmount_, coin_, _coinAmount);
+
+        // Update presale stats
+        _updatePresaleStats(tokenAmount_, _coinAmount, _coinDecimals);
 
         //Emit the event for tokenns bought
         emit TokensBought(
