@@ -414,7 +414,42 @@ contract Presale is Pausable, ReentrancyGuard {
     function estimatedCoinAmountForTokenAmount(
         uint256 tokenAmount_,
         IERC20 coin_
-    ) public view returns (uint256) {}
+    ) public view returns (uint256) {
+        uint256 coinAmount = 0;
+        uint256 remainingTokens = tokenAmount_; //Exceeding token amount if totalTokensSold + tokenAmount exceeds currentThreshold
+        uint256 tokensSoldIncreased = 0; //For comparison of totaltokensSold with currentThreshold
+        uint8 _coinDecimals = getCoinDecimals(coin_);
+
+        for (uint8 i = 0; i < thresholds.length; i++) {
+            // Get the current token price at the index
+            uint256 _priceAtCurrentTier = getCurrentTokenPriceForIndex(i);
+
+            // Determine how many tokens can be bought at this tier given the current totalTokensSold
+            uint256 _currentThreshold = thresholds[i];
+
+            uint256 _availableTokensAtThreshold = _currentThreshold >
+                totalTokensSold + tokensSoldIncreased
+                ? _currentThreshold - totalTokensSold - tokensSoldIncreased
+                : 0;
+
+            // If remaining tokens exceed available tokens, buy up to the available limit
+            if (remainingTokens > _availableTokensAtThreshold) {
+                coinAmount +=
+                    (_availableTokensAtThreshold * _priceAtCurrentTier) /
+                    (10 ** (18 - _coinDecimals + 6));
+                tokensSoldIncreased += _availableTokensAtThreshold; //Increase totalTokensSold by _availableTokensAtThreshold
+                remainingTokens -= _availableTokensAtThreshold; //Calculate exceeding token amounts
+            } else {
+                // Otherwise, calculate cost for the remaining tokens and exit
+                coinAmount +=
+                    (remainingTokens * _priceAtCurrentTier) /
+                    (10 ** (18 - _coinDecimals + 6));
+                break; // No more tokens to calculate
+            }
+        }
+
+        return coinAmount;
+    }
 
     /**
      * @dev buy token with ETH
