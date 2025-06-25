@@ -273,7 +273,7 @@ contract Presale is Pausable, ReentrancyGuard {
             _coinAmount <= coin_.balanceOf(msg.sender),
             "Insufficient balance."
         );
-        
+
         //Send the coin to the contract
         SafeERC20.safeTransferFrom(
             coin_,
@@ -350,7 +350,8 @@ contract Presale is Pausable, ReentrancyGuard {
         uint256 coinAmount_,
         uint8 coinDecimals_
     ) private {
-        //Private code to update presale statistics
+        totalTokensSold += tokenAmount_;
+        fundsRaised += coinAmount_ / (10 ** (coinDecimals_ - 6));
     }
 
     /**
