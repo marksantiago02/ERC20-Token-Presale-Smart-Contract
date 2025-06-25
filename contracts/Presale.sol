@@ -330,7 +330,16 @@ contract Presale is Pausable, ReentrancyGuard {
         IERC20 coin_,
         uint256 coinAmount_
     ) private {
-        //Private code to update investor records
+        if (investorTokenBalance[investor_] == 0) {
+            investors.push(investor_);
+            if (fundsRaised < softcap && !earlyInvestorsMapping[investor_]) {
+                earlyInvestorsMapping[investor_] = true;
+                earlyInvestors.push(investor_);
+            }
+        }
+
+        investorTokenBalance[investor_] += tokenAmount_;
+        investments[investor_][address(coin_)] += coinAmount_;
     }
 
     /**
