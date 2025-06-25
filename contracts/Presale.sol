@@ -542,7 +542,20 @@ contract Presale is Pausable, ReentrancyGuard {
     function estimatedEthAmountForTokenAmount(
         uint256 tokenAmount_
     ) public view returns (uint256) {
-        //Private code to calculate eth amount for buying certain amount of token
+        // Calculate usdt amount for buying token.
+        uint256 _usdtAmount = estimatedCoinAmountForTokenAmount(
+            tokenAmount_,
+            USDTInterface
+        );
+
+        //Swap USDT for ETH
+        address[] memory path = new address[](2);
+        path[0] = router.WETH();
+        // path[1] = MAINNET_USDT;
+        path[1] = USDT;
+        uint256[] memory amounts = router.getAmountsIn(_usdtAmount, path);
+        require(amounts.length > 0, "Invalid path.");
+        return amounts[0];
     }
 
     /**
