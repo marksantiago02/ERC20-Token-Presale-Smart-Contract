@@ -364,7 +364,44 @@ contract Presale is Pausable, ReentrancyGuard {
         uint256 coinAmount_,
         IERC20 coin_
     ) public view returns (uint256) {
-        //Private code to calculate the token amount available with coin (like usdt, usdc, dai)
+        uint256 tokenAmount = 0;
+        uint256 remainingCoinAmount = coinAmount_;
+        uint8 _coinDecimals = getCoinDecimals(coin_);
+
+        for (uint8 i = 0; i < thresholds.length; i++) {
+            // Get the current token price at the index
+            uint256 _priceAtCurrentTier = getCurrentTokenPriceForIndex(i);
+            uint256 _currentThreshold = thresholds[i];
+
+            // Determine the number of tokens available at this tier
+            uint256 numTokensAvailableAtTier = _currentThreshold >
+                totalTokensSold
+                ? _currentThreshold - totalTokensSold
+                : 0;
+
+            // Calculate the maximum number of tokens that can be bought with the remaining coin amount
+            uint256 maxTokensAffordable = (remainingCoinAmount *
+                (10 ** (18 - _coinDecimals + 6))) / _priceAtCurrentTier;
+
+            // Determine how many tokens can actually be bought at this tier
+            uint256 tokensToBuyAtTier = numTokensAvailableAtTier <
+                maxTokensAffordable
+                ? numTokensAvailableAtTier
+                : maxTokensAffordable;
+
+            // Update amounts
+            tokenAmount += tokensToBuyAtTier;
+            remainingCoinAmount -=
+                (tokensToBuyAtTier * _priceAtCurrentTier) /
+                (10 ** (18 - _coinDecimals + 6));
+
+            // If there is no remaining coin amount, break out of the loop
+            if (remainingCoinAmount == 0) {
+                break;
+            }
+        }
+
+        return tokenAmount;
     }
 
     /**
