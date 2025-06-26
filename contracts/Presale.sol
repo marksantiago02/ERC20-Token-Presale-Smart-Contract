@@ -619,7 +619,21 @@ contract Presale is Pausable, ReentrancyGuard {
             "Can not withdraw as softcap not reached."
         );
 
-        // Private code that Transfer the funds to the wallet
+        uint256 _usdtBalance = USDTInterface.balanceOf(address(this));
+        uint256 _usdcBalance = USDCInterface.balanceOf(address(this));
+        uint256 _daiBalance = DAIInterface.balanceOf(address(this));
+
+        require(
+            _usdtBalance > 0 && _usdcBalance > 0 && _daiBalance > 0,
+            "No funds to withdraw"
+        );
+
+        if (_usdtBalance > 0)
+            SafeERC20.safeTransfer(USDTInterface, wallet, _usdtBalance);
+        if (_usdcBalance > 0)
+            SafeERC20.safeTransfer(USDCInterface, wallet, _usdcBalance);
+        if (_daiBalance > 0)
+            SafeERC20.safeTransfer(DAIInterface, wallet, _daiBalance);
     }
 
     /**
