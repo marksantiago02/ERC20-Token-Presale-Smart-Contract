@@ -637,8 +637,8 @@ contract Presale is Pausable, ReentrancyGuard {
     }
 
     /**
-     * @dev claim ECT tokens after presale is finished
-     * @param investor_ user claiming ECT tokens after sale
+     * @dev claim FICCO tokens after presale is finished
+     * @param investor_ user claiming FICCO tokens after sale
      */
     function claim(address investor_) external nonReentrant {
         require(
@@ -651,8 +651,16 @@ contract Presale is Pausable, ReentrancyGuard {
             "Can not claim as softcap not reached. Instead you can be refunded."
         );
 
-        // Private code that Users can claim their tokens after the presale ends
+        uint256 _tokenAmountforUser = getTokenAmountForInvestor(investor_);
+        uint256 _bonusTokenAmount = getBonusTokenAmount();
 
+        if (isEarlyInvestors(investor_))
+            _tokenAmountforUser += _bonusTokenAmount;
+        require(_tokenAmountforUser > 0, "No tokens claim.");
+        investorTokenBalance[investor_] = 0;
+        earlyInvestorsMapping[investor_] = false;
+
+        SafeERC20.safeTransfer(token, investor_, _tokenAmountforUser);
         emit TokensClaimed(investor_, _tokenAmountforUser);
     }
 
