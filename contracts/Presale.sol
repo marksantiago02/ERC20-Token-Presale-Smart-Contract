@@ -569,7 +569,34 @@ contract Presale is Pausable, ReentrancyGuard {
         );
         require(fundsRaised < softcap, "Softcap reached, refund not available");
 
-        // Private Code for Refund the funds to the investors
+        // refund all funds to investors
+        for (uint256 i = 0; i < investors.length; i++) {
+            address investor = investors[i];
+
+            //Refund USDT
+            uint256 _usdtAmount = investments[investor][address(USDTInterface)];
+            if (_usdtAmount > 0) {
+                investments[investor][address(USDTInterface)] = 0;
+                SafeERC20.safeTransfer(USDTInterface, investor, _usdtAmount);
+                emit FundsRefunded(investor, _usdtAmount, block.timestamp);
+            }
+
+            //Refund USDC
+            uint256 _usdcAmount = investments[investor][address(USDCInterface)];
+            if (_usdcAmount > 0) {
+                investments[investor][address(USDCInterface)] = 0;
+                SafeERC20.safeTransfer(USDCInterface, investor, _usdcAmount);
+                emit FundsRefunded(investor, _usdcAmount, block.timestamp);
+            }
+
+            //Refund DAI
+            uint256 _daiAmount = investments[investor][address(DAIInterface)];
+            if (_daiAmount > 0) {
+                investments[investor][address(DAIInterface)] = 0;
+                SafeERC20.safeTransfer(DAIInterface, investor, _daiAmount);
+                emit FundsRefunded(investor, _daiAmount, block.timestamp);
+            }
+        }
 
         fundsRaised = 0;
         delete investors;
